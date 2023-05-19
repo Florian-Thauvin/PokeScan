@@ -52,7 +52,7 @@ public class CardProcessing {
         //camera.addCallbackBuffer(FormatProcessing.bytesFromMat(processed));
     }
 
-    public static Card extractInformations(Mat mat) {
+    public static Card extractInformations(Mat mat) throws CardProcessingException {
         // CF https://stackoverflow.com/questions/62116719/read-text-on-card
         Mat greyMat = new Mat();
         Imgproc.cvtColor(mat, greyMat, Imgproc.COLOR_BGR2GRAY);
@@ -77,6 +77,6 @@ public class CardProcessing {
         }
 
 
-        return new Card();
+        return new Card("", "", "");
     }
 }
