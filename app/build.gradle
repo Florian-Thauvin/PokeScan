@@ -29,6 +29,17 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
+        animationsDisabled = true
+
+        /*managedDevices {
+            devices {
+                pixel2api30 (com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 30
+                    systemImageSource = "google"                    
+                }
+            }
+        }*/
     }
 }
 
