@@ -1,0 +1,64 @@
+<svg width="120" height="120" >
+  <!-- Create the scanner icon -->
+  <rect width="110" height="110" x="5" y="5" ry="15"
+    fill="white" stroke="black" stroke-width="3"/>
+  <line x1="5.5" y1="30" x2="5.5" y2="90"
+    stroke-width="4" stroke="white" />
+  <line x1="114.5" y1="30" x2="114.5" y2="90"
+    stroke-width="4" stroke="white" />
+  <line x1="30" y1="5" x2="90" y2="5"
+    stroke-width="4" stroke="white" />
+  <line x1="30" y1="114.5" x2="90" y2="114.5"
+    stroke-width="4" stroke="white" />
+
+  <!-- Full circle in red -->
+  <circle cx="60" cy="60" r="45" 
+    fill="red"/>
+  <!-- Bottom circle in white -->
+  <path d="M15,60 a1,1 0 0,0 90,0" 
+    fill="white" />
+
+  <!-- Create all black lines-->
+  <line x1="15" y1="60" x2="105" y2="60"
+    stroke-width="2" stroke="black" />
+  <!--External circle -->
+  <circle cx="60" cy="60" r="46" 
+    fill="transparent" stroke-width="3" stroke="black"/>
+  <!-- Second circle-->
+  <circle cx="60" cy="60" r="12" 
+    fill="white" stroke-width="2" stroke="black" />
+  <!-- Center circle -->
+  <circle cx="60" cy="60" r="9" 
+    fill="white" stroke-width="1" stroke="black"/>
+
+  <!-- Add the glass at the bottom-->
+  <circle cx="78" cy="70" r="13" 
+    fill="white"/>
+  <circle cx="78" cy="70" r="10" 
+    fill="white" stroke-width="3" stroke="black"/>
+  <line x1="87" y1="82" x2="96" y2="95" 
+    stroke-width="8" stroke="white"/>
+  <line x1="84" y1="79" x2="94" y2="92" 
+    stroke-width="4.5" stroke="black" stroke-linecap="round"/>
+   <path d="M78 63.5 Q 83.5 64.5 84 70"
+    fill="transparent" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+   <!--Add some lightning -->
+   <path d="M59 17 Q 97.5 19.5 103 58.7"
+   stroke="url('#light1')" stroke-width="3.7" fill="transparent"/>
+    <path d="M19.5 75 Q 39 113 79.5 98.5"
+   stroke="url('#light2')" stroke-width="3.7" fill="transparent"/>
+ 
+
+    <defs>
+        <radialGradient  id="light1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+        <stop offset="60%" style="stop-color:rgb(255,255,255);stop-opacity:.8" />
+        <stop offset="100%" style="stop-color:rgb(200,200,200);stop-opacity:.5" />
+        </radialGradient >
+            <radialGradient  id="light2" cx="30%" cy="60%" r="80%" fx="60%" fy="60%">
+        <stop offset="0%" style="stop-color:rgb(60,60,06);stop-opacity:.8" />
+        <stop offset="100%" style="stop-color:rgb(60,60,60);stop-opacity:0" />
+        </radialGradient >
+    </defs>
+ 
+</svg>
