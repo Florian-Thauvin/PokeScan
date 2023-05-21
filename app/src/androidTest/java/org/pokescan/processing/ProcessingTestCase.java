@@ -13,7 +13,7 @@ import org.pokescan.model.Card;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class ProcessingTestSuite {
+public class ProcessingTestCase {
     /*@BeforeClass
     public static void beforeAll() {
         File openCV = new File("./libs/opencv/x64/opencv_java453.dll");

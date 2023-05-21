@@ -19,6 +19,14 @@ public class StorageUtils {
      */
     private static final PokeLogger LOGGER = PokeLoggerFactory.getLogger(EMarker.START_AND_STOP, StorageUtils.class);
 
+
+    /**
+     * Constructor
+     */
+    private StorageUtils(){
+        // Hidden
+    }
+
     /**
      * Method used to create a directory at the
      *
