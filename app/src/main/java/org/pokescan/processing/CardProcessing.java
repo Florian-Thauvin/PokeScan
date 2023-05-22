@@ -31,6 +31,10 @@ public class CardProcessing {
      */
     static {
         // We need to init OpenCV lib first
+        loadOpenCv();
+    }
+
+    public static final void loadOpenCv(){
         if (!OpenCVLoader.initDebug()) {
             LOGGER.error("Unable to load OpenCV");
         } else {

@@ -7,10 +7,7 @@ package org.pokescan.common.logger;
 import android.util.Log;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Custom logger
@@ -101,24 +98,22 @@ public class PokeLogger {
     @SafeVarargs
     private final <T> void logMessage(int level, String message, T... infoList) {
         // Create a list of info
-        List<String> infoStringList = new ArrayList<>();
+        StringJoiner joiner = new StringJoiner(" ");
+        joiner.add(message);
 
         // Add all info as string
         for (T info : infoList) {
             if (info instanceof Exception) {
-                infoStringList.add(((Exception) info).getMessage());
+                joiner.add(((Exception) info).getMessage());
             } else {
-                infoStringList.add(info != null ? info.toString() : "null");
+                joiner.add(info != null ? info.toString() : "null");
             }
         }
-
-        // Get the message with info
-        String messageWithInfos = String.format(message, infoStringList);
 
         // Get the actual date
         String date = dateFormat.format(new Date());
         // Create the full message
-        String fullMessage = String.format("[%s] - [%s]: %s", date, context, messageWithInfos);
+        String fullMessage = String.format("[%s] - [%s]: %s", date, context, joiner.toString());
         // Print the message
         Log.println(level, marker.toString(), fullMessage);
     }

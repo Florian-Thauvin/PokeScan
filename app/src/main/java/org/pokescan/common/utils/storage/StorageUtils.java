@@ -40,7 +40,7 @@ public class StorageUtils {
             File dir = new File(path);
             if (!dir.exists()) {
                 if (!dir.mkdirs()) {
-                    LOGGER.error("Creation of directory %s failed, check does Android Manifest have permission to write to external storage", path);
+                    LOGGER.error("Creation of directory ", path," failed, check does Android Manifest have permission to write to external storage");
                 } else {
                     LOGGER.info("Directory created at: ", path);
                     isExisting = true;
@@ -50,7 +50,7 @@ public class StorageUtils {
                 isExisting = true;
             }
         } catch (Exception e) {
-            LOGGER.error("Can't create folder to %s, unexpected exception: ", path, e);
+            LOGGER.error("Can't create folder to ", path,", unexpected exception: ", e);
         }
         return isExisting;
     }
