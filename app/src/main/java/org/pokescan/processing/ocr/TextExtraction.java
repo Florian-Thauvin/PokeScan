@@ -49,7 +49,6 @@ public class TextExtraction {
 
         // First create all directory and copy data
         prepareTesseract(assets);
-        // Then init Tesseract
         initTesseract();
     }
 
