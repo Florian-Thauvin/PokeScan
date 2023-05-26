@@ -13,8 +13,7 @@ import org.opencv.imgproc.Imgproc;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class OpenCvTest {
     private static  final String DIRECTORY = new File("src/test/java/org/pokescan/processing/dev").getAbsolutePath();
@@ -82,6 +81,12 @@ public class OpenCvTest {
 
         Mat preprocessedMat = preProcessImage(rawMat, name);
         detectEdges(preprocessedMat, name);
+
+    }
+
+    @Test
+    public void testCollectionExtraction(){
+
     }
 
     private static Mat preProcessImage(Mat rawMat, String name){
@@ -136,10 +141,7 @@ public class OpenCvTest {
                 hierarchey, 2, new Point() ) ;
 
         MatOfPoint max = findMaxContour(contourList);
-        MatOfPoint2f contour_ = new MatOfPoint2f();
-        max.convertTo(contour_, CvType.CV_32FC2);
-        RotatedRect contour = Imgproc.minAreaRect(contour_);
-        //Rect contour= Imgproc.boundingRect(max);
+        Rect contour= Imgproc.boundingRect(max);
 
         int percent = 9;
         int height = contour.height / (percent+1);
@@ -163,11 +165,10 @@ public class OpenCvTest {
         Mat pokemonColl = extractCollection(pokemonNumberAndCollection);
         saveMat("Collection", name, pokemonColl);
 
-       checkCollection(pokemonNumberAndCollection, name, "Astres");
-        checkCollection(pokemonNumberAndCollection, name, "Origine");
-        checkCollection(pokemonNumberAndCollection, name, "Tempete");
+        getBestCollection(pokemonNumberAndCollection, name);
     }
-
+    
+    
      private static Mat extractCollection(Mat mat){
             Mat res = new Mat();
             mat.copyTo(res);
@@ -216,41 +217,58 @@ public class OpenCvTest {
         return max;
     }
 
-    private static void checkCollection(Mat image, String name, String collection) {
+    private static void getBestCollection(Mat card, String name){
+        Map<String, Double> result = new HashMap<>();
+        File collections = new File(DIRECTORY, "/collection/");
+        for(File file : collections.listFiles()) {
+            //System.out.println("Test collection "+ file.getName());
+            checkCollection(card, name, file.getName().replace(".png",""), result);
+        }
+
+        String expectedCollection=  Collections.max(result.entrySet(), Map.Entry.comparingByValue()).getKey();
+        System.out.println("Detected collection : " + expectedCollection + " for " + name +", results : " + result);
+    }
+    
+    private static void checkCollection(Mat image, String name, String collection, Map<String, Double> resultMap) {
+        int kernelSize = 2;
+        Mat kernel =  Imgproc.getStructuringElement(Imgproc.THRESH_BINARY, new Size((kernelSize*kernelSize) + 1, (kernelSize*kernelSize)+1));
+
         Mat template = loadMat(collection, "/collection/", PNG);
         Imgproc.cvtColor(template, template, Imgproc.COLOR_BGR2GRAY);
-        Imgproc.threshold(template, template, 130, 255, Imgproc.THRESH_BINARY);
+        //Imgproc.threshold(template, template, 130, 255, Imgproc.THRESH_BINARY);
         int size = image.height() / 4;
-        Imgproc.resize(template, template, new Size(size,size));
+       Imgproc.resize(template, template, new Size(size,size));
+        Imgproc.dilate(template, template, kernel);
+        Imgproc.erode(template, template, kernel);
 
         Mat detected = new Mat();
         image.copyTo(detected);
+
+
+           Imgproc.dilate(detected, detected, kernel);
+        Imgproc.erode(detected, detected, kernel);
 
         int result_cols = detected.cols() - template.cols() + 1;
         int result_rows = detected.rows() - template.rows() + 1;
         Mat result = new Mat(result_rows, result_cols, CvType.CV_32FC1);
 
-        Imgproc.matchTemplate(detected, template, result, Imgproc.TM_CCOEFF);
-        Core.normalize(result, result, 0, 100, Core.NORM_MINMAX, -1, new Mat());
+        Imgproc.matchTemplate(detected, template, result, Imgproc.TM_CCORR_NORMED);
+        //Core.normalize(result, result, 0, 100, Core.NORM_MINMAX, -1, new Mat());
 
         Core.MinMaxLocResult mmr = Core.minMaxLoc(result);
 
         // / Show me what you got
         Imgproc.cvtColor(detected, detected, Imgproc.COLOR_GRAY2BGR);
 
-        System.out.println("Get a mmr for "+ collection + " with min at "+ mmr.minVal + " and a max to " + mmr.maxVal);
-
         if(mmr.maxVal > 0.8) {
             Imgproc.rectangle(detected, mmr.maxLoc, new Point(mmr.maxLoc.x + template.cols(),
                     mmr.maxLoc.y + template.rows()), new Scalar(0, 0, 255), 3);
         }
-        if(mmr.minVal > 0.8) {
-            Imgproc.rectangle(detected, mmr.minLoc, new Point(mmr.minLoc.x + template.cols(),
-                    mmr.minLoc.y + template.rows()), new Scalar(0, 255, 0), 3);
-        }
-
+        //System.out.println("Get a mmr for "+ collection + " with min at "+ mmr.minVal + " and a max to " + mmr.maxVal);
 
         saveMat(String.format("Res_%s", collection), name, detected);
+
+        resultMap.put(collection, mmr.maxVal);
     }
 
 
