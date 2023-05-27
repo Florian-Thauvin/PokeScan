@@ -4,10 +4,12 @@
 
 package org.pokescan.processing;
 
+import android.content.res.AssetManager;
 import android.hardware.Camera;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.pokescan.common.logger.EMarker;
 import org.pokescan.common.logger.PokeLogger;
@@ -30,16 +32,7 @@ public class CardProcessing {
 
     private static CardCollection collection;
 
-    /**
-     * Code used to init the Card processing
-     */
-    static {
-        // We need to init OpenCV lib first
-        // And get all collections
-        initProcessing();
-    }
-
-    public static final void initProcessing(){
+    public static final void initProcessing(File collectionDirectory){
         if (!OpenCVLoader.initDebug()) {
             LOGGER.error("Unable to load OpenCV");
         } else {
@@ -47,6 +40,15 @@ public class CardProcessing {
         }
 
         collection = new CardCollection();
+        initCollections(collectionDirectory);
+    }
+
+    private static void initCollections(File collectionDirectory) {
+        for(File file : collectionDirectory.listFiles()) {
+            String name = file.getName().replace(".png","");
+            Mat card = Imgcodecs.imread(file.getAbsolutePath());
+            Imgproc.cvtColor(card, card, Imgproc.COLOR_BGR2GRAY);
+        }
     }
 
     @SuppressWarnings("unused")

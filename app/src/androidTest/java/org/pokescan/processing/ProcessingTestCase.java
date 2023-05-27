@@ -188,6 +188,7 @@ public class ProcessingTestCase {
 
     private static Card extractCardInformation(String file) throws CardProcessingException {
         Mat matrix = new Imgcodecs().imread(file);
-        return CardProcessing.extractInformations(matrix);
+       // return CardProcessing.extractInformations(matrix);
+        return null;
     }
 }

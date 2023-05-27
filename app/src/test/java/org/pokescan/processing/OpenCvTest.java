@@ -37,6 +37,7 @@ public class OpenCvTest {
         System.load(tesseract.getAbsolutePath());*/
     }
 
+
     private void initResDir(){
         File dir = new File(DIRECTORY, RESULT_DIR);
         try {
@@ -75,12 +76,11 @@ public class OpenCvTest {
         Map<String, Mat> collectionToTest = new HashMap<>();
 
         File collections = new File(DIRECTORY, "/collection/");
+        CardProcessing.initProcessing(collections);
         for(File file : collections.listFiles()) {
             String name = file.getName().replace(".png","");
             Mat card = loadMat(name, "/collection/", PNG);
             Imgproc.cvtColor(card, card, Imgproc.COLOR_BGR2GRAY);
-
-            collection.addNewCollection(name, card);
 
             Mat toTest = new Mat();
             card.copyTo(toTest);

@@ -13,7 +13,11 @@ import org.pokescan.common.logger.EMarker;
 import org.pokescan.common.logger.PokeLogger;
 import org.pokescan.common.logger.PokeLoggerFactory;
 import org.pokescan.common.utils.permissions.RequestPermissionsTool;
+import org.pokescan.processing.CardCollection;
+import org.pokescan.processing.CardProcessing;
 import org.pokescan.ui.camera.CameraLayout;
+
+import java.io.File;
 
 /**
  * Main Class of the application, launched at startup
@@ -48,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         requestPermissions();
         // Create the camera layout with the Surface display and capture button
         cameraLayout = new CameraLayout(findViewById(R.id.camera_preview), findViewById(R.id.button_capture), this);
+
+        CardProcessing.initProcessing(new File(this.getClass().getResource("/collections").getFile()));
     }
 
     /**
