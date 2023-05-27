@@ -1,6 +1,7 @@
 package org.pokescan.processing;
 
 import android.graphics.Bitmap;
+import com.asprise.ocr.Ocr;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import org.junit.Test;
 import org.opencv.android.Utils;
@@ -9,6 +10,8 @@ import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FastFeatureDetector;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.pokescan.processing.CardCollection;
+import org.pokescan.processing.CardProcessing;
 import org.pokescan.processing.CardResult;
 
 import java.io.File;
@@ -98,6 +101,17 @@ public class OpenCvTest {
         }
     }
 
+    @Test
+    public void testOct(        ){
+
+        Ocr.setUp(); // one time setup
+        Ocr ocr = new Ocr(); // create a new OCR engine
+        ocr.startEngine("eng", Ocr.SPEED_FASTEST); // English
+        String s = ocr.recognize(new File[] {new File(getJpgFileName("Black", RESULT_DIR, PNG))}, Ocr.RECOGNIZE_TYPE_ALL, Ocr.OUTPUT_FORMAT_PLAINTEXT);
+        System.out.println("Result: " + s);
+        // ocr more images here ...
+        ocr.stopEngine();
+    }
 
     private static  void testProcessing(String name){
         File dir = new File(DIRECTORY, String.format("%s/%s",RESULT_DIR, name));

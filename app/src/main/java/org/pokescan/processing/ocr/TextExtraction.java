@@ -7,14 +7,18 @@ package org.pokescan.processing.ocr;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import com.asprise.ocr.Ocr;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import org.pokescan.common.logger.EMarker;
 import org.pokescan.common.logger.PokeLogger;
 import org.pokescan.common.logger.PokeLoggerFactory;
 import org.pokescan.common.utils.storage.StorageUtils;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 /**
  * Class used to extract a text from a picture
@@ -135,11 +139,20 @@ public class TextExtraction {
      *         the image to process
      * @return extracted text
      */
-    public String extractText(Bitmap bitmap) {
-        tessBaseApi.setImage(bitmap);
+    public String extractText(File image) {
+        /*tessBaseApi.setImage(bitmap);
         String extractedText = tessBaseApi.getUTF8Text();
         tessBaseApi.end();
 
-        return extractedText;
+        return extractedText;*/
+
+        Ocr.setUp(); // one time setup
+        Ocr ocr = new Ocr(); // create a new OCR engine
+        ocr.startEngine("eng", Ocr.SPEED_FASTEST); // English
+        String s = ocr.recognize(new File[]{image}, Ocr.RECOGNIZE_TYPE_ALL, Ocr.OUTPUT_FORMAT_PLAINTEXT);
+        System.out.println("Result: " + s);
+        // ocr more images here ...
+        ocr.stopEngine();
+        return s;
     }
 }

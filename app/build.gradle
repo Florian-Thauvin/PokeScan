@@ -44,6 +44,10 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.quickbirdstudios:opencv:4.5.3.0'
+
+    implementation group: 'com.asprise.ocr', name: 'java-ocr-api', version: '15.3.0.3'
+    implementation group: 'com.jtransc', name: 'jtransc-rt', version: '0.5.0-ALPHA2'
+
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation 'junit:junit:4.13.1'

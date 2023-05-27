@@ -40,7 +40,9 @@ public class CardProcessing {
         }
 
         collection = new CardCollection();
-        initCollections(collectionDirectory);
+        if(collectionDirectory != null) {
+            initCollections(collectionDirectory);
+        }
     }
 
     private static void initCollections(File collectionDirectory) {

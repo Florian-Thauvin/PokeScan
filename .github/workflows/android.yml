@@ -2,7 +2,7 @@ name: Android CI
 
 on:
     push:
-        branches: ["main"]
+        branches: ["main", "feature/processing"]
     pull_request:
         branches: ["main"]
 
@@ -21,7 +21,7 @@ jobs:
                   workflow: ".github/workflows/android.yml"
                   older-than-seconds: 86400
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}       
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     android:
         runs-on: macos-latest
@@ -87,5 +87,4 @@ jobs:
                   -Dsonar.host.url=${{ secrets.SONAR_URL }}
                   -Dsonar.login=${{ secrets.SONAR_TOKEN }}
                   -Dsonar.organization="Florian Thauvin"
-                  -Dsonar.projectKey=PokeScan 
-
+                  -Dsonar.projectKey=PokeScan
