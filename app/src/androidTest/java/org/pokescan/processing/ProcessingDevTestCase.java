@@ -33,7 +33,7 @@ public class ProcessingDevTestCase {
 
     @BeforeClass
     public static void beforeAll() {
-        CardProcessing.loadOpenCv();
+        CardProcessing.initProcessing();
     }
 
     @Test

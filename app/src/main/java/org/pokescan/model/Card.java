@@ -14,26 +14,24 @@ import java.util.Collection;
  * Definition of a Card
  */
 public class Card implements AbstractData {
-    // TODO
-
     /**
      * Name of the Pokemon
      */
     @NotNull
-    private final String name;
+    protected String name;
 
     /**
      * Id of the card in the collection
      */
     @NotNull
     @Pattern("[0-9]{3}")
-    private final String id;
+    protected String id;
 
     /**
      * The collection
      */
     @NotNull
-    private final Collection collection;
+    protected String collection;
 
     // private Type type;
 
@@ -45,7 +43,7 @@ public class Card implements AbstractData {
     public Card(@NotNull String name, @NotNull String id, String collection) {
         this.name = name;
         this.id = id;
-        this.collection = new ArrayList();
+        this.collection = collection;
     }
 
     @NotNull
@@ -60,6 +58,6 @@ public class Card implements AbstractData {
 
     @NotNull
     public String getCollection() {
-        return "";
+        return collection;
     }
 }

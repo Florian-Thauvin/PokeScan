@@ -5,19 +5,19 @@
 package org.pokescan.processing;
 
 import android.hardware.Camera;
+import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Rect;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.pokescan.common.logger.EMarker;
 import org.pokescan.common.logger.PokeLogger;
 import org.pokescan.common.logger.PokeLoggerFactory;
+import org.pokescan.common.utils.processing.CardProcessingUtils;
+import org.pokescan.common.utils.processing.ImageDrawerUtils;
 import org.pokescan.model.Card;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.util.*;
 
 /**
  * Class used to process a card to extract all informations
@@ -26,61 +26,94 @@ public class CardProcessing {
 
     private static final PokeLogger LOGGER = PokeLoggerFactory.getLogger(EMarker.START_AND_STOP, CardProcessing.class);
 
+    private  static  final Mat KERNEL = CardProcessingUtils.createBinaryKernel(5);
+
+    private static CardCollection collection;
+
     /**
      * Code used to init the Card processing
      */
     static {
         // We need to init OpenCV lib first
-        loadOpenCv();
+        // And get all collections
+        initProcessing();
     }
 
-    public static final void loadOpenCv(){
+    public static final void initProcessing(){
         if (!OpenCVLoader.initDebug()) {
             LOGGER.error("Unable to load OpenCV");
         } else {
             LOGGER.info("OpenCV loaded Successfully");
         }
+
+        collection = new CardCollection();
     }
 
-    // TODO
+    @SuppressWarnings("unused")
+    public static CardResult extractCardInformations(Mat rawImage){
+        CardResult result = new CardResult(rawImage);
 
-    public static void processCamera(byte[] data,
-                                     Camera camera) {
-        Mat rawImage = new Mat(camera.getParameters().getPictureSize().width, camera.getParameters().getPictureSize().height, CvType.CV_8UC3);
-        rawImage.put(0, 0, data);
+        preProcess(result);
+        detectEdges(result);
+        collection.getBestCollection(result);
 
-        Mat processed = new Mat(camera.getParameters().getPictureSize().width, camera.getParameters().getPictureSize().height, CvType.CV_8UC3);
-
-        Imgproc.cvtColor(rawImage, processed, Imgproc.COLOR_RGB2GRAY);
-
-        //camera.addCallbackBuffer(FormatProcessing.bytesFromMat(processed));
+        return result;
     }
 
-    public static Card extractInformations(Mat mat) throws CardProcessingException {
-        // CF https://stackoverflow.com/questions/62116719/read-text-on-card
-        Mat greyMat = new Mat();
-        Imgproc.cvtColor(mat, greyMat, Imgproc.COLOR_BGR2GRAY);
+    protected static void preProcess(CardResult card){
+        // First pass mat to Gray scale
+        Mat proccessedMat = new Mat();
+        Imgproc.cvtColor(card.getRawMat(), proccessedMat, Imgproc.COLOR_BGR2GRAY);
 
-        Mat processedMat = new Mat();
-        Imgproc.threshold(greyMat, processedMat, 150, 255, Imgproc.THRESH_BINARY);
+        //Mat blurMat = new Mat();
+        //Imgproc.blur(greyMat, blurMat, new Size(3, 3));
+        //saveMat("Blur", name, blurMat);
 
-        Mat edgesMat = new Mat();
-        Imgproc.Canny(processedMat, edgesMat, 30, 200);
+        // Then, apply a threshold to discrete image
+        Imgproc.threshold(proccessedMat, proccessedMat, 130, 255, Imgproc.THRESH_BINARY);
 
-        List<MatOfPoint> contours = new ArrayList<>();
-        Imgproc.findContours(edgesMat, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        card.setProcessedMat( proccessedMat);
+    }
 
-        if (contours.size() > 0) {
-            Mat maxContour = new Mat();
-            //Core.max(contours);
-            Rect rect = Imgproc.boundingRect(maxContour);
+    protected static void detectEdges(CardResult card){
+        Mat processedMat = card.getProcessedMat();
 
+        Mat erodeMat = new Mat();
+        Imgproc.erode(processedMat, erodeMat, KERNEL);
 
-            Mat cropedFrame = new Mat(rect.height, rect.width, mat.type());
-            Imgproc.resize(mat, cropedFrame, cropedFrame.size(), Imgproc.INTER_AREA);
+        // Get contours
+        List<MatOfPoint> contourList = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(erodeMat, contourList, hierarchy, Imgproc.RETR_TREE,
+                Imgproc.CHAIN_APPROX_NONE);
+
+        MatOfPoint max = CardProcessingUtils.findMaxContour(contourList);
+
+        Rect contour= Imgproc.boundingRect(max);
+
+        int percent = 9;
+        int height = contour.height / (percent+1);
+        int width = contour.width;
+
+        Rect topCard = new Rect(contour.x, contour.y, width/ 2, height);
+        Rect bottom = new Rect(contour.x, contour.y + height * percent, width, height);
+
+        if(card.isOnDebug()) {
+            Mat contourMat = new Mat();
+            card.getRawMat().copyTo(contourMat);
+            ImageDrawerUtils.drawImageEdges(contourMat, contourList, hierarchy, contour, topCard, bottom);
+            card.addDebugImage("Contour", contourMat);
         }
 
 
-        return new Card("", "", "");
+        card.setNameMat(CardProcessingUtils.cropImage(card.getProcessedMat(), topCard));
+
+        /*
+        Mat pokemonNumberAndCollection = new Mat(processedMat, bottom);
+
+        Rect collectionRect = extractCollection(pokemonNumberAndCollection);
+        Rect numberRect =*/
+        card.setNumberMat(CardProcessingUtils.cropImage(card.getProcessedMat(), bottom));
+        card.setNumberMat(CardProcessingUtils.cropImage(card.getProcessedMat(), bottom));
     }
 }
