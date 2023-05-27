@@ -12,12 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.pokescan.common.logger.EMarker;
 import org.pokescan.common.logger.PokeLogger;
 import org.pokescan.common.logger.PokeLoggerFactory;
+import org.pokescan.common.utils.conversion.ConvertMatUtils;
 import org.pokescan.common.utils.permissions.RequestPermissionsTool;
 import org.pokescan.processing.CardCollection;
 import org.pokescan.processing.CardProcessing;
 import org.pokescan.ui.camera.CameraLayout;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Main Class of the application, launched at startup
@@ -53,7 +56,12 @@ public class MainActivity extends AppCompatActivity {
         // Create the camera layout with the Surface display and capture button
         cameraLayout = new CameraLayout(findViewById(R.id.camera_preview), findViewById(R.id.button_capture), this);
 
-        CardProcessing.initProcessing(new File(this.getClass().getResource("/collections").getFile()));
+        //CardProcessing.initProcessing(new File(this.getClass().getResource("/collections").getFile()));
+        try (InputStream is = getAssets().open("collections")){
+            CardProcessing.initProcessing(ConvertMatUtils.copyInputStreamToFile(is));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

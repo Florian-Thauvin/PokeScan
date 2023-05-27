@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pokescan.common.utils.conversion.ConvertMatUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -145,45 +146,10 @@ public class TextExtractionTestCase extends AndroidJUnitRunner {
         assertNotNull("Check if file exist", is);
 
         //Bitmap image = BitmapFactory.decodeStream(new BufferedInputStream(is));
-        File image = copyInputStreamToFile(is);
+        File image = ConvertMatUtils.copyInputStreamToFile(is);
         assertNotNull("Check if file is loaded", image);
 
         String resultText = textExtraction.extractText(image);
         assertEquals("We must have the same text", expectedText, resultText);
-    }
-
-    // Copy an InputStream to a File.
-//
-    private File copyInputStreamToFile(InputStream in) {
-        File file = new File("");
-        OutputStream out = null;
-
-        try {
-            out = new FileOutputStream(file);
-            byte[] buf = new byte[1024];
-            int len;
-            while((len=in.read(buf))>0){
-                out.write(buf,0,len);
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            // Ensure that the InputStreams are closed even if there's an exception.
-            try {
-                if ( out != null ) {
-                    out.close();
-                }
-
-                // If you want to close the "in" InputStream yourself then remove this
-                // from here but ensure that you close it yourself eventually.
-                in.close();
-            }
-            catch ( IOException e ) {
-                e.printStackTrace();
-            }
-        }
-        return file;
     }
 }

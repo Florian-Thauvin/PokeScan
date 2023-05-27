@@ -7,6 +7,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
 
+import java.io.*;
+
 /**
  * Class used to convert data to {@link Mat}
  */
@@ -38,5 +40,39 @@ public class ConvertMatUtils {
         byte[] buffer = new byte[length];
         mat.get(0, 0, buffer);
         return buffer;
+    }
+
+
+    public static File copyInputStreamToFile(InputStream in) {
+        File file = new File("");
+        OutputStream out = null;
+
+        try {
+            out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len=in.read(buf))>0){
+                out.write(buf,0,len);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            // Ensure that the InputStreams are closed even if there's an exception.
+            try {
+                if ( out != null ) {
+                    out.close();
+                }
+
+                // If you want to close the "in" InputStream yourself then remove this
+                // from here but ensure that you close it yourself eventually.
+                in.close();
+            }
+            catch ( IOException e ) {
+                e.printStackTrace();
+            }
+        }
+        return file;
     }
 }
