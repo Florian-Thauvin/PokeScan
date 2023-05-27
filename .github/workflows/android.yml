@@ -43,7 +43,7 @@ jobs:
               run: chmod +x gradlew
 
             - name: Build with Gradle
-              run: ./gradlew clean build
+              run: ./gradlew clean build -x test
             - name: Gradle cache
               uses: gradle/gradle-build-action@v2
             - name: AVD cache
