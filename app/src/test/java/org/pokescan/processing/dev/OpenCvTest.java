@@ -86,7 +86,15 @@ public class OpenCvTest {
 
     @Test
     public void testCollectionExtraction(){
+        loadLibs();
 
+        File collections = new File(DIRECTORY, "/collection/");
+        for(File file : collections.listFiles()) {
+            String name = file.getName().replace(".png","");
+            Mat card = loadMat(name, "/collection/", PNG);
+            Imgproc.cvtColor(card, card, Imgproc.COLOR_BGR2GRAY);
+            getBestCollection(card, name);
+        }
     }
 
     private static Mat preProcessImage(Mat rawMat, String name){
@@ -94,17 +102,17 @@ public class OpenCvTest {
         Mat greyMat = new Mat();
         Imgproc.cvtColor(rawMat, greyMat, Imgproc.COLOR_BGR2GRAY);
 
-        //saveMat("Grey", name, greyMat);
+        saveMat("Grey", name, greyMat);
 
-        Mat blurMat = new Mat();
-        Imgproc.blur(greyMat, blurMat, new Size(3, 3));
+        //Mat blurMat = new Mat();
+        //Imgproc.blur(greyMat, blurMat, new Size(3, 3));
         //saveMat("Blur", name, blurMat);
 
         // Then, apply a threshold to discrete image
         Mat threshMat = new Mat();
-        Imgproc.threshold(blurMat, threshMat, 130, 255, Imgproc.THRESH_BINARY);
+        Imgproc.threshold(greyMat, threshMat, 130, 255, Imgproc.THRESH_BINARY);
 
-        //saveMat("Thresh",name, threshMat);
+        saveMat("Thresh",name, threshMat);
 
 
         return threshMat;
@@ -122,7 +130,7 @@ public class OpenCvTest {
         Mat kernel =  Imgproc.getStructuringElement(Imgproc.THRESH_BINARY, new Size((size*size) + 1, (size*size)+1));
         Imgproc.erode(mat, erodeMat, kernel);
 
-        //saveMat("Eroded", name, erodeMat);
+        saveMat("Eroded", name, erodeMat);
 
         // Get contours
         List<MatOfPoint> contourList = new ArrayList<>();
@@ -165,7 +173,7 @@ public class OpenCvTest {
         Mat pokemonColl = extractCollection(pokemonNumberAndCollection);
         saveMat("Collection", name, pokemonColl);
 
-        getBestCollection(pokemonNumberAndCollection, name);
+        getBestCollection(pokemonColl, name);
     }
     
     
@@ -192,7 +200,7 @@ public class OpenCvTest {
 
             List<Mat> possible = new ArrayList<>();
 
-         Imgproc.cvtColor(res, res, Imgproc.COLOR_GRAY2BGR);
+         //Imgproc.cvtColor(res, res, Imgproc.COLOR_GRAY2BGR);
             for(MatOfPoint points : contourList){
                 drawRect(res, Imgproc.boundingRect(points),3);
                 //possible.add(new Mat(mat, Imgproc.boundingRect(points)));
@@ -238,21 +246,21 @@ public class OpenCvTest {
         //Imgproc.threshold(template, template, 130, 255, Imgproc.THRESH_BINARY);
         int size = image.height() / 4;
        Imgproc.resize(template, template, new Size(size,size));
-        Imgproc.dilate(template, template, kernel);
-        Imgproc.erode(template, template, kernel);
+       /* Imgproc.dilate(template, template, kernel);
+        Imgproc.erode(template, template, kernel);*/
 
         Mat detected = new Mat();
         image.copyTo(detected);
 
 
-           Imgproc.dilate(detected, detected, kernel);
-        Imgproc.erode(detected, detected, kernel);
+        //Imgproc.dilate(detected, detected, kernel);
+       // Imgproc.erode(detected, detected, kernel);
 
-        int result_cols = detected.cols() - template.cols() + 1;
-        int result_rows = detected.rows() - template.rows() + 1;
-        Mat result = new Mat(result_rows, result_cols, CvType.CV_32FC1);
+       // int result_cols = detected.cols() - template.cols() + 1;
+        //int result_rows = detected.rows() - template.rows() + 1;
+        Mat result = new Mat(/*result_rows, result_cols, CvType.CV_32FC1*/);
 
-        Imgproc.matchTemplate(detected, template, result, Imgproc.TM_CCORR_NORMED);
+        Imgproc.matchTemplate(detected, template, result, Imgproc.TM_CCOEFF_NORMED);
         //Core.normalize(result, result, 0, 100, Core.NORM_MINMAX, -1, new Mat());
 
         Core.MinMaxLocResult mmr = Core.minMaxLoc(result);
@@ -266,7 +274,7 @@ public class OpenCvTest {
         }
         //System.out.println("Get a mmr for "+ collection + " with min at "+ mmr.minVal + " and a max to " + mmr.maxVal);
 
-        saveMat(String.format("Res_%s", collection), name, detected);
+        //saveMat(String.format("Res_%s", collection), name, detected);
 
         resultMap.put(collection, mmr.maxVal);
     }
