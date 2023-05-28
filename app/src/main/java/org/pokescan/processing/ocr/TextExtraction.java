@@ -7,15 +7,12 @@ package org.pokescan.processing.ocr;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.Environment;
-import com.asprise.ocr.Ocr;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import org.pokescan.common.logger.EMarker;
 import org.pokescan.common.logger.PokeLogger;
 import org.pokescan.common.logger.PokeLoggerFactory;
 import org.pokescan.common.utils.storage.StorageUtils;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.Arrays;
