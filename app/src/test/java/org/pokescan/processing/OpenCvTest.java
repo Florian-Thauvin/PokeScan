@@ -79,11 +79,12 @@ public class OpenCvTest {
         Map<String, Mat> collectionToTest = new HashMap<>();
 
         File collections = new File(DIRECTORY, "/collection/");
-        CardProcessing.initProcessing(collections);
         for(File file : collections.listFiles()) {
             String name = file.getName().replace(".png","");
             Mat card = loadMat(name, "/collection/", PNG);
             Imgproc.cvtColor(card, card, Imgproc.COLOR_BGR2GRAY);
+
+            collection.addNewCollection(name, card);
 
             Mat toTest = new Mat();
             card.copyTo(toTest);
@@ -107,7 +108,7 @@ public class OpenCvTest {
         Ocr.setUp(); // one time setup
         Ocr ocr = new Ocr(); // create a new OCR engine
         ocr.startEngine("eng", Ocr.SPEED_FASTEST); // English
-        String s = ocr.recognize(new File[] {new File(getJpgFileName("Black", RESULT_DIR, PNG))}, Ocr.RECOGNIZE_TYPE_ALL, Ocr.OUTPUT_FORMAT_PLAINTEXT);
+        String s = ocr.recognize(new File[] {new File(getJpgFileName("Black", "/ocr/", PNG))}, Ocr.RECOGNIZE_TYPE_ALL, Ocr.OUTPUT_FORMAT_PLAINTEXT);
         System.out.println("Result: " + s);
         // ocr more images here ...
         ocr.stopEngine();

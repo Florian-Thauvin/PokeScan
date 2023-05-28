@@ -39,17 +39,19 @@ public class CardProcessing {
             LOGGER.info("OpenCV loaded Successfully");
         }
 
-        collection = new CardCollection();
-        if(collectionDirectory != null) {
-            initCollections(collectionDirectory);
-        }
+        initCollections(collectionDirectory);
     }
 
-    private static void initCollections(File collectionDirectory) {
-        for(File file : collectionDirectory.listFiles()) {
-            String name = file.getName().replace(".png","");
-            Mat card = Imgcodecs.imread(file.getAbsolutePath());
-            Imgproc.cvtColor(card, card, Imgproc.COLOR_BGR2GRAY);
+    protected static void initCollections(File collectionDirectory) {
+        collection = new CardCollection();
+        if(collectionDirectory != null) {
+            for(File file : collectionDirectory.listFiles()) {
+                String name = file.getName().replace(".png","");
+                Mat card = Imgcodecs.imread(file.getAbsolutePath());
+                Imgproc.cvtColor(card, card, Imgproc.COLOR_BGR2GRAY);
+
+                collection.addNewCollection(name, card);
+            }
         }
     }
 
