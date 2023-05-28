@@ -141,7 +141,8 @@ public class ProcessingDev {
         Ocr.setUp();
         Ocr ocr = new Ocr();
         ocr.startEngine("eng", Ocr.SPEED_FASTEST);
-        ocr.recognize(new File[] {file},  Ocr.RECOGNIZE_TYPE_ALL, Ocr.OUTPUT_FORMAT_PLAINTEXT);
+        String res = ocr.recognize(new File[] {file},  Ocr.RECOGNIZE_TYPE_ALL, Ocr.OUTPUT_FORMAT_PLAINTEXT);
         ocr.stopEngine();
+        return res;
     }
 }
